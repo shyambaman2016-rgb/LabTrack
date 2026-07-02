@@ -38,3 +38,21 @@ def create_access_token(data: dict):
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM
     )
+
+def verify_access_token(token: str):
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM]
+        )
+
+        email = payload.get("sub")
+
+        if email is None:
+            return None
+
+        return email
+
+    except JWTError:
+        return None

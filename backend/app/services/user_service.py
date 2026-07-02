@@ -7,6 +7,8 @@ from app.schemas.user import UserLogin
 from app.core.security import get_password_hash
 from app.core.security import verify_password
 from app.core.security import create_access_token
+from fastapi.security import OAuth2PasswordRequestForm
+
 def register_user(
     db: Session,
     user: UserCreate
@@ -26,17 +28,17 @@ def register_user(
 
 def login_user(
     db: Session,
-    user: UserLogin
+    form_data: OAuth2PasswordRequestForm
 ):
     db_user = db.query(User).filter(
-        User.email == user.email
+        User.email == form_data.username
     ).first()
 
     if not db_user:
         return {"message": "Invalid Credentials"}
 
     if not verify_password(
-        user.password,
+        form_data.password,
         db_user.password
     ):
         return {"message": "Invalid Credentials"}
